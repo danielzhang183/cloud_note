@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>云笔记</title>
+	<script type="text/javascript" src="scripts/common/jquery.min.js"></script>
+	<script type="text/javascript" src="scripts/basevalue.js"></script>
+	<script type="text/javascript" src="scripts/cookie.js"></script>
+	<script type="text/javascript" src="scripts/login.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			//登录功能事件的绑定
+			$("#login").click(userLogin);
+			//注册事件的绑定
+			$("#regist_button").click(function(){
+				$("#warning_1 span").html("");
+				$("#warning_2 span").html("");
+				$("#warning_3 span").html("");
+				//获取参数
+				var name=$("#regist_username").val().trim();
+				var nick=$("#nickname").val().trim();
+				var password=$("#regist_password").val().trim();
+				var final_password=$("#final_password").val().trim();
+				//检查数据格式
+				//检查用户
+				var ok=true;
+				if(name==""){
+					ok=false;
+					$("#warning_1 span").html("用户不能为空");
+					$("#warning_1").show();
+					
+				}
+				//检测密码数据1-非空2-不能小于6位
+				if(password==""){
+					ok=false;
+					$("#warning_2 span").html("密码不能为空");
+					$("#warning_2").show();
+				}else if(password.length>0&&password.length<6){
+					ok=false;
+					$("#warning_2 span").html("密码长度过短");
+					$("#warning_2").show();
+				}
+				//检测确认密码：是否和密码一致
+				else if(final_password!=password){
+					ok=false;
+					$("#warning_3 span").html("密码输入不一致");
+					$("#warning_3").show();
+				}
+				if(ok){
+					$.ajax({//通过数据校验
+						url:path+"/user/add.do",
+						type:"post",
+						data:{"name":name,"nick":nick,"password":password},
+						dataType:"json",
+						success:function(result){
+							//注册成功
+							if(result.status==0){								
+								alert(result.msg);
+								//返回到登录页面
+								$("#back").click();
+							}else if(restlt.status==1){
+								//用户名被占用
+								$("#warning_1 span").html(result.msg);
+								$("#warning_1").show();
+							}
+							
+							
+						},
+						error:function(){
+							alert("注册失败")
+						}
+					});
+				}
+			});
+		});
+	</script>
+	<link rel="stylesheet" href="styles/login.css"/>
+</head>
+	<body>
+		<div class="global">
+			<div class="log log_in" tabindex='-1' id='dl'>
+				<dl>
+					<dt>
+						<div class='header'>
+							<h3>登&nbsp;录</h3>
+						</div>
+					</dt>
+					<dt></dt>
+					<dt>
+						<div class='letter'>
+							用户名:&nbsp;<input type="text" name="" id="count" tabindex='1'/>
+							<span id="count_span"></span>
+						</div>
+					</dt>
+					<dt>
+						<div class='letter'>
+							密&nbsp;&nbsp;&nbsp;码:&nbsp;<input type="password" name="" id="password" tabindex='2'/>
+							<span id="password_span"></span>
+						</div>
+					</dt>
+					<dt>
+						<div>
+							<input type="button" name="" id="login" value='&nbsp登&nbsp录&nbsp' tabindex='3'/>
+							<input type="button" name="" id="sig_in" value='&nbsp注&nbsp册&nbsp' tabindex='4'/>
+						</div>
+					</dt>
+				</dl>
+			</div>
+			<div class="sig sig_out" tabindex='-1' id='zc'>
+				<dl>
+					<dt>
+						<div class='header'>
+							<h3>注&nbsp;册</h3>
+						</div>
+					</dt>
+					<dt></dt>
+					<dt>
+						<div class='letter'>
+							用户名:&nbsp;<input type="text" name="" id="regist_username" tabindex='5' maxlength="20"/>
+							<div class='warning' id='warning_1'><span>该用户名不可用</span></div>
+						</div>
+					</dt>
+					<dt>
+						<div class='letter'>
+							昵&nbsp;&nbsp;&nbsp;称:&nbsp;<input type="text" name="" id="nickname" tabindex='6'/>
+						</div>
+					</dt>
+					<dt>
+						<div class='letter'>
+							密&nbsp;&nbsp;&nbsp;码:&nbsp;<input type="password" name="" id="regist_password" tabindex='7' maxlength="20"/>
+							<div class='warning' id='warning_2'><span>密码长度过短</span></div>
+						</div>
+					</dt>
+					<dt>
+						<div class='password'>
+							&nbsp;&nbsp;&nbsp;确认密码:&nbsp;<input type="password" name="" id="final_password" tabindex='8' maxlength="20"/>
+							<div class='warning' id='warning_3'><span>密码输入不一致</span></div>
+						</div>
+					</dt>
+					<dt>
+						<div>
+							<input type="button" name="" id="regist_button" value='&nbsp注&nbsp册&nbsp' tabindex='9'/>
+							<input type="button" name="" id="back" value='&nbsp返&nbsp回&nbsp' tabindex='10'/>
+						</div>
+					</dt>
+				</dl>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function get(e){
+				return document.getElementById(e);
+			}
+			get('sig_in').onclick=function(){
+				get('dl').className='log log_out';
+				get('zc').className='sig sig_in';
+			}
+			get('back').onclick=function(){
+				get('zc').className='sig sig_out';
+				get('dl').className='log log_in';
+			}
+		</script>		
+	</body>
+</html>
